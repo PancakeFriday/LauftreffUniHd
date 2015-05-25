@@ -23,18 +23,9 @@
 
     // VIPagemap::checkURL();
 
-    if(isset($_POST['login']))
-	{
-		if($database->check_password($_POST['username'], $_POST['password']))
-		{
-			$_SESSION['user'] = $_POST['username'];
-			header('Location: ' . VIPagemap::$baseurl . '/admin');
-		}
-		else
-		{
-			$error = '<div class="error">Username and password do not match</div>';
-		}
-	}
+
+	VIAdminCenter::setupAdmin();
+	VIAdminCenter::login();
 
 	if(isset($_GET['nav']) && $_GET['nav'] == 'logout')
 	{
@@ -76,6 +67,6 @@
 
 	require(__DIR__.'/footer.php');
 
-	// for($i=0; $i<=20; $i++)
-	// 	$database->set_content( 'aktuelles', 'Robin', 'Test Post ' . $i, lorem_ipsum( Array( rand(1,3), 'plaintext' ), false) );
+	 //for($i=0; $i<=20; $i++)
+		 //$database->set_content( 'aktuelles', 'Robin', 'Test Post ' . $i, lorem_ipsum( Array( rand(1,3), 'plaintext' ), false) );
 ?>

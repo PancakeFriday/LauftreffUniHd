@@ -1,209 +1,19 @@
 <?php
-	$nav_admin = Array( 'Home',
-		'Edit content' => 'edit',
-		'Add content' => 'add',
-		'Media center' => 'media',
-		'Add admin' => 'user',
-		'Profile' => 'profile',
-		'Logout' => 'logout'
-		);
-	$max_art_per_page = 4;
-
-	$nav = Array( 'Infos', 'Aktuelles', 'Strecken', 'Links');
-
-	$error = '';
-
-	function getempty($var, $what)
-	{
-		if(empty($var))
-			return $what;
-	}
-
-	function makelist($string)
-	{
-		return '<li>' . $string . '</li>';
-	}
+	VIAdminCenter::addNavEntry('Edit Content', 'edit');
+	VIAdminCenter::addNavEntry('Add content', 'add');
+	VIAdminCenter::addNavEntry('Media center', 'media');
+	VIAdminCenter::addNavEntry('Add admin', 'user');
+	VIAdminCenter::addNavEntry('Profile', 'profile');
+	VIAdminCenter::addNavEntry('Logout', 'logout');
 
 	// Someone submitted a form. What could it be?
-	if(isset($_POST['editpost']))
-	{ // Someone edited a post
-		if(!empty($_POST['title']) && !empty($_POST['content']) && !empty($_GET['cat']) && !empty($_SESSION['editid']))
-		{
-			// All entries have been provided, let's edit the post!
-			$t = $database->edit_content($_GET['cat'], $_GET['action'], $_POST['title'], $_POST['content']);
-
-			$error = '<div class="success">Successfully edited the post</div>';
-		}
-		else
-		{
-			// Whoops something's been left empty...
-			$list = '<ul class="errorlist">';
-			$list .= makelist(getempty($_POST['title'], 'Title'));
-			$list .= makelist(getempty($_POST['content'], 'Content'));
-			$list .= makelist(getempty($_GET['cat'], 'Category'));
-			$list .= makelist(getempty($_SESSION['editid'], 'Editid (How did you get there?)'));
-			$list .= '</ul>';
-
-			$error = '<div class="error">Some of the required fields have not been provided';
-			$error .= $list . '</div>';
-		}
-
-		if(isset($_SESSION['editid']))
-			unset($_SESSION['editid']);
-	}
-
-	if(isset($_POST['addpost']))
-	{
-		// Someone wants to add a post
-		if(!empty($_POST['title']) && !empty($_POST['content']) && !empty($_GET['cat']) && !empty($_SESSION['user']))
-		{
-			$database->set_content($_GET['cat'], $_SESSION['user'], $_POST['title'], $_POST['content']);
-
-			$error = '<div class="success">Successfully added the post</div>';
-		}
-		else
-		{
-			// Whoops something's been left empty...
-			$list = '<ul class="errorlist">';
-			$list .= makelist(getempty($_POST['title'], 'Title'));
-			$list .= makelist(getempty($_POST['content'], 'Content'));
-			$list .= makelist(getempty($_GET['cat'], 'Category'));
-			$list .= makelist(getempty($_SESSION['user'], 'User (How did you get there?)'));
-			$list .= '</ul>';
-
-			$error = '<div class="error">Some of the required fields have not been provided';
-			$error .= $list . '</div>';
-		}
-	}
-
-	if(isset($_POST['adduser']))
-	{
-		// Someone wants to add a post
-		if(!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['password_r']) && !empty($_POST['email']) && !empty($_SESSION['user']))
-		{
-			if($_POST['password'] == $_POST['password_r'])
-			{
-				if(strlen($_POST['password']) < 8)
-				{
-					$error = '<div class="error">Password has to be at least 8 Characters long</div>';
-				}
-				else
-				{
-					$database->add_admin( $_POST['username'], $_POST['email'], $_POST['password']);
-					$error = '<div class="success">Successfully added the administrator</div>';
-				}
-			}
-		}
-		else
-		{
-			// Whoops something's been left empty...
-			$list = '<ul class="errorlist">';
-			$list .= makelist(getempty($_POST['username'], 'Username'));
-			$list .= makelist(getempty($_POST['password'], 'Password'));
-			$list .= makelist(getempty($_POST['password_r'], 'Repeat Password'));
-			$list .= makelist(getempty($_POST['email'], 'Email'));
-			$list .= makelist(getempty($_SESSION['user'], 'User (How did you get there?)'));
-			$list .= '</ul>';
-
-			$error = '<div class="error">Some of the required fields have not been provided';
-			$error .= $list . '</div>';
-		}
-	}
-
-	if(isset($_POST['profile']))
-	{
-		// Someone wants to edit their profile
-		if($database->check_password($_SESSION['user'], $_POST['password_o']))
-		{
-			if(!empty($_POST['username']) && !empty($_POST['email']) && !empty($_SESSION['user']))
-			{
-				if(!empty($_POST['password']) && !empty($_POST['password_r']))
-				{ // Also update password
-					if($_POST['password'] == $_POST['password_r'])
-					{
-						if(strlen($_POST['password']) >= 8)
-						{
-							$result = $database->updateuser($_SESSION['user'], $_POST['username'], $_POST['email'], $_POST['password_o'], $_POST['password']);
-							if($result == 1)
-							{
-								$_SESSION['user'] = $_POST['username'];
-							}
-						}
-						else
-							$error = '<div class="error">The passwords has to be at least 8 characters long</div>';
-					}
-					else
-					{
-						$error = '<div class="error">The passwords did not match</div>';
-					}
-				}
-				else
-				{ // Dont update password
-					$result = $database->updateuser($_SESSION['user'], $_POST['username'], $_POST['email'], $_POST['password_o']);
-					if($result == 1)
-					{
-						$_SESSION['user'] = $_POST['username'];
-					}
-				}
-			}
-			else
-			{
-				// Whoops something's been left empty...
-				$list = '<ul class="errorlist">';
-				$list .= makelist(getempty($_POST['username'], 'Username'));
-				$list .= makelist(getempty($_POST['password'], 'Password'));
-				$list .= makelist(getempty($_POST['password_r'], 'Repeat Password'));
-				$list .= makelist(getempty($_POST['email'], 'Email'));
-				$list .= makelist(getempty($_SESSION['user'], 'Session User (How did you get there?)'));
-				$list .= '</ul>';
-
-				$error = '<div class="error">Some of the required fields have not been provided';
-				$error .= $list . '</div>';
-			}
-		}
-		else
-		{
-			// Password doesnt match
-			$error = '<div class="error">You either didn\'t provide your old password, or it is wrong.';
-			$error .= '</div>';
-		}
-	}
-
-	if(isset($_POST['media']))
-	{
-		$allowedExts = array("gif", "jpeg", "jpg", "png");
-		$temp = explode(".", $_FILES["file"]["name"]);
-		$extension = end($temp);
-
-		if ((($_FILES["file"]["type"] == "image/gif")
-		|| ($_FILES["file"]["type"] == "image/jpeg")
-		|| ($_FILES["file"]["type"] == "image/jpg")
-		|| ($_FILES["file"]["type"] == "image/pjpeg")
-		|| ($_FILES["file"]["type"] == "image/x-png")
-		|| ($_FILES["file"]["type"] == "image/png"))
-		&& ($_FILES["file"]["size"] < 2500000)
-		&& in_array($extension, $allowedExts)) {
-		  if ($_FILES["file"]["error"] > 0) {
-		    $error = "<div class='error'>Return Code: " . $_FILES["file"]["error"] . "</div>";
-		  } else {
-		    if (file_exists(VIPagemap::$basedir . "/media/" . $_FILES["file"]["name"])) {
-		      $error = '<div class="error">' . $_FILES["file"]["name"] . " already exists. </div>";
-		    } else {
-		      move_uploaded_file($_FILES["file"]["tmp_name"],
-		      VIPagemap::$basedir . "/media/" . $_FILES["file"]["name"]);
-		      $error = "<div class='success'>Stored in: " . VIPagemap::$basedir . "/media/" . $_FILES["file"]["name"] . '</div>';
-		    }
-		  }
-		} else {
-		  echo "<div class='error'>Invalid file</div>";
-		}
-	}
+	VIAdminCenter::parseForm();
 ?>
 
 <div id="admin_nav">
 <ul>
 	<?php
-		foreach($nav_admin as $n=>$v)
+		foreach(VIAdminCenter::getNav() as $n=>$v)
 		{
 			if($n == 'Home')
 			{
@@ -236,7 +46,7 @@
 <div id="content_creator">
 	<?php
 
-	echo $error;
+	echo VIAdminCenter::getError();
 
 	$page = 1;
 
@@ -245,7 +55,7 @@
 		$page = (int)($_GET['page']);
 	}
 
-	if(isset($_GET['nav']) && $_GET['nav'] === 'add')
+	if(isset($_GET['nav']) && $_GET['nav'] == 'add')
 	{ // Add posts
 		if(isset($_GET['cat']))
 		{ // Add an article
@@ -260,7 +70,7 @@
 		}
 		else
 		{ // Select the category
-			foreach($nav as $n)
+			foreach(VIPagemap::getNav() as $n)
 			{
 				if(strtolower($n) == 'admin')
 					continue;
@@ -327,7 +137,7 @@
 
 		$dir = VIPagemap::$basedir.'/media/';
 		$images = array_diff(scandir($dir), array('..', '.'));
-		
+
 		$rex = "/^.*\.(jpg|jpeg|png|gif)$/i";
 
 		foreach($images as $i)
@@ -373,7 +183,7 @@
 		}
 		else
 		{ // Select the article
-			foreach($nav as $n)
+			foreach(VIPagemap::getNav() as $n)
 			{
 				$carray = $database->get_content( strtolower($n) );
 
@@ -420,7 +230,7 @@
 				}
 
 				echo '<div class="cat_hide" '. $style . '>';
-				$max_pages = ceil($carray_count / $max_art_per_page);
+				$max_pages = ceil($carray_count / VIAdminCenter::$max_art_per_page);
 
 				echo '<ul class="pagination">';
 
@@ -476,7 +286,8 @@
 
 				foreach($carray as $key=>$c)
 				{
-					if($key+$max_art_per_page >= $page * $max_art_per_page && $key+$max_art_per_page < ($page + 1 )* $max_art_per_page)
+					$mapp = VIAdminCenter::$max_art_per_page;
+					if($key+$mapp >= $page * $mapp && $key+$mapp < ($page + 1 )* $mapp)
 					{
 						echo '<p class="author">By <strong>' . $c[3] . '</strong> on ' . $c[4] . '</p>'; // Author
 						echo '<h4>' . $c[1] . '</h4>'; // Title

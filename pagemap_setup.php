@@ -2,9 +2,14 @@
 
     require_once(__DIR__.'/VIWebFramework/VIPagemap.php');
 
+	VIPagemap::addNavEntry('Infos');
+	VIPagemap::addNavEntry('Aktuelles');
+	VIPagemap::addNavEntry('Strecken');
+	VIPagemap::addNavEntry('Links');
+
     VIPagemap::$main_title = 'Lauftreff Uni Heidelberg';
 
-    VIPagemap::$baseurl = 'http://lauftreffunihd.square7.ch/lauftr';
+    VIPagemap::$baseurl = 'http://localhost/lauftr';
     VIPagemap::$basedir = __DIR__;
 
     // Error Document

@@ -20,7 +20,7 @@
 		*/
 
 		$str = '';
-		
+
 		foreach($options as $option) {
 			$str .= '/' . $option;
 		}
@@ -83,5 +83,23 @@
 	function valid_token() {
 		// connect to database and check for token...
 		return true;
+	}
+
+	function getempty($var, $what)
+	{
+		if(empty($var))
+			return $what;
+	}
+
+	function getfull($var, $what)
+	{
+		if(isset($var) && empty($var))
+			return $what;
+		return $var;
+	}
+
+	function makelist($string)
+	{
+		return '<li>' . $string . '</li>';
 	}
 ?>

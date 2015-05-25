@@ -4,10 +4,11 @@
 
 	$host = 'localhost';
 	$user = 'lauftreffunihd';
-	$password = '01754532207';
+	$password = 'C5j8FN3bSyQ2aAxP';
 	$con_database = 'lauftreffunihd';
 
 	$database = new VIDatabase($host, $user, $password, $con_database);
+	VIAdminCenter::setDatabase($database);
 
 	if($database === false)
 	{

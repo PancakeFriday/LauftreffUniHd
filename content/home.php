@@ -78,8 +78,11 @@
 		<h2> Infos </h2>
 			<?php
 				$count = count($infos)-1;
-				echo '<h4>' . $infos[$count][1] . '</h4>';
-				echo '<p>' . link_image($infos[$count][2]) . '</p><br>';
+				if(isset($infos[$count]))
+				{
+					echo '<h4>' . $infos[$count][1] . '</h4>';
+					echo '<p>' . link_image($infos[$count][2]) . '</p><br>';
+				}
 			?>
 		</div>
 		<h2> Strecken </h2>
