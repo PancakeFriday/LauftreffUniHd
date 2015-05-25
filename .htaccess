@@ -1,0 +1,13 @@
+Order Allow,Deny
+Allow from all
+Deny from none
+
+RewriteEngine On
+
+RewriteBase /lauftr/
+
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule  .?  -  [L]
+
+RewriteRule ^([a-z0-9-]+)/?$ index.php?p=$1 [QSA,NC,L]
+RewriteRule ^(.*) index.php [QSA,L]
